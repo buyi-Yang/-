@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一周年纪念日快乐</title>
+  <style>
+    /* 样式部分保持不变 */
+    body {
+      background-color: #000;
+      color: #ff69b4;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #message-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .message {
+      font-size: 4em;
+      white-space: nowrap;
+      opacity: 1;
+      display: flex;
+      gap: 10px;
+      filter: blur(0);
+      animation: fadeIn 1.5s ease-in-out forwards;
+    }
+
+    .message span {
+      display: inline-block;
+      opacity: 1;
+      animation: bubble 1s ease-in-out forwards;
+    }
+
+    @keyframes bubble {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      0% {
+        filter: blur(20px);
+        opacity: 0;
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+      }
+
+      50% {
+        filter: blur(10px);
+        clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+      }
+
+      100% {
+        filter: blur(0);
+        opacity: 1;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+    }
+
+    @keyframes fadeOut {
+      0% {
+        filter: blur(0);
+        opacity: 1;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      50% {
+        filter: blur(10px);
+        clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+      }
+
+      100% {
+        filter: blur(20px);
+        opacity: 0;
+        clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+      }
+    }
+
+    .background-love {
+      position: absolute;
+      top: -50px;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .love-text,
+    .heart {
+      position: absolute;
+      color: rgba(255, 105, 180, 0.8);
+      font-size: 1.5em;
+      animation: flow 5s linear infinite;
+    }
+
+    .heart {
+      font-size: 2em;
+      color: #ff1493;
+    }
+
+    @keyframes flow {
+      0% {
+        transform: translateY(-100%);
+      }
+
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+
+    #music-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #b398a5;
+      color: #d62222;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      z-index: 3;
+      border-radius: 5px;
+    }
+
+    #music-toggle:hover {
+      background-color: #55273f;
+    }
+
+    #heartSpeak {
+      position: absolute;
+      margin-top: 600px;
+      margin-bottom: 200px;
+      opacity: 0;
+      /* 初始隐藏 */
+      transition: opacity 1.5s ease-in-out;
+      /* 淡入效果 */
+    }
+
+    h3 {
+      font-size: 30px;
+      color: #8a7676;
+      height: 40px;
+      width: 1000px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="message-container"></div>
+  <div class="background-love" id="background-love"></div>
+  <button id="music-toggle">关闭音乐</button>
+  <div id="heartSpeak">
+    <h3 id="say">我意识到我可能在某些时候做得不够好，伤害了你的感情。我想要道歉，
+      并且我希望我们可以一起努力，让我们的关系变得更好。</h3>
+  </div>
+
+  <!-- 音乐 -->
+  <audio id="background-music" loop autoplay>
+    <source src="唯一.mp3" type="audio/mpeg">
+    您的浏览器不支持音频播放。
+  </audio>
+
+  <script>
+    // 页面加载后监听用户点击事件
+    window.addEventListener('DOMContentLoaded', () => {
+      const backgroundMusic = document.getElementById('background-music');
+
+      // 监听页面点击事件
+      document.body.addEventListener('click', () => {
+        backgroundMusic.play()
+          .then(() => {
+            console.log('音频播放成功！');
+          })
+          .catch(error => {
+            console.log('音频播放失败：', error);
+          });
+      }, { once: true }); // 只监听一次
+    });
+
+    const messages = ["张海玉", "2025年3月25日一周年纪念快乐", "我爱你"];
+    const messageContainer = document.getElementById('message-container');
+    const heartSpeak = document.getElementById('heartSpeak');
+    let currentIndex = 0;
+    let isFirstRound = true; // 标记是否完成第一轮显示
+
+    // 创建背景流动的 "love" 和爱心
+    function createBackgroundLove() {
+      const backgroundLove = document.getElementById('background-love');
+      const loveCount = 30;
+      const heartCount = 20;
+
+      for (let i = 0; i < loveCount; i++) {
+        const loveText = document.createElement('div');
+        loveText.textContent = 'love';
+        loveText.classList.add('love-text');
+        loveText.style.left = `${Math.random() * 100}vw`;
+        loveText.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        loveText.style.animationDelay = `${Math.random() * 2}s`;
+        backgroundLove.appendChild(loveText);
+      }
+
+      for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.textContent = '杨友明❤️张海玉';
+        heart.classList.add('heart');
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        heart.style.animationDelay = `${Math.random() * 2}s`;
+        backgroundLove.appendChild(heart);
+      }
+    }
+
+    // 显示当前消息并播放气泡动画
+    function showMessage() {
+      // 清空容器
+      messageContainer.innerHTML = '';
+
+      // 创建当前消息的 DOM 元素
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+
+      // 将消息拆分为单个字符
+      const characters = messages[currentIndex].split('');
+      characters.forEach((char, index) => {
+        const charSpan = document.createElement('span');
+        charSpan.textContent = char;
+        charSpan.style.animationDelay = `${index * 0.2}s`; // 延迟每个字符的动画
+        messageDiv.appendChild(charSpan);
+      });
+
+      messageContainer.appendChild(messageDiv);
+
+      // 延迟后打散当前消息
+      setTimeout(() => {
+        // 添加模糊碎花消失效果
+        messageDiv.style.animation = 'fadeOut 1.5s ease-in-out forwards';
+
+        // 打散完成后切换到下一条消息
+        setTimeout(() => {
+          currentIndex = (currentIndex + 1) % messages.length; // 循环播放
+
+          // 如果完成一轮且是第一次完成
+          if (currentIndex === 0 && isFirstRound) {
+            isFirstRound = false; // 标记为已完成第一轮
+            showHeartSpeak(); // 显示 id="say" 的内容
+          }
+
+          showMessage(); // 显示下一条消息
+        }, 1500); // 等待模糊效果完成后再切换
+      }, 3500); // 每段消息显示 3 秒
+    }
+
+    // 显示 id="say" 的内容
+    function showHeartSpeak() {
+      const heartSpeak = document.getElementById('heartSpeak');
+      heartSpeak.style.opacity = 1; // 淡入显示
+    }
+
+    // 音乐控制
+    const musicToggle = document.getElementById('music-toggle');
+    const backgroundMusic = document.getElementById('background-music');
+
+    // 初始化按钮状态
+    musicToggle.textContent = backgroundMusic.paused ? '关闭音乐' : '播放音乐';
+
+    // 切换音乐播放状态
+    musicToggle.addEventListener('click', () => {
+      if (backgroundMusic.paused) {
+        backgroundMusic.play();
+        musicToggle.textContent = '关闭音乐';
+      } else {
+        backgroundMusic.pause();
+        musicToggle.textContent = '播放音乐';
+      }
+    });
+
+    createBackgroundLove();
+    showMessage();
+  </script>
+</body>
+
+</html>
